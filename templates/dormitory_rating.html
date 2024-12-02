@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>기숙사 평점</title>
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            /* 밝은 회색 배경 */
+            color: #000000;
+            /* 검은색 글자 */
+        }
+
+        /* 헤더 스타일 */
+        header {
+            background-color: #ffffff;
+            /* 흰색 배경 */
+            color: #3498db;
+            /* 하늘색 */
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+
+        /* 네비게이션 바 스타일 */
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0 0;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000000;
+            /* 검은색 */
+            font-size: 1.1em;
+            padding: 10px;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+
+        nav ul li a:hover {
+            background-color: #3498db;
+            /* 하늘색 배경 */
+            color: #ffffff;
+            /* 흰색 글자 */
+        }
+
+        /* 메인 콘텐츠 */
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            /* 흰색 배경 */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        /* 페이지 제목 */
+        .page-title {
+            text-align: center;
+            font-size: 2em;
+            color: #3498db;
+            /* 하늘색 */
+            margin-bottom: 20px;
+        }
+
+        /* 기숙사 평점 관련 스타일 */
+        .rating-form input,
+        .rating-form select,
+        .rating-form button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #ecf0f1;
+            /* 연한 회색 배경 */
+            color: #000000;
+            /* 검은색 글자 */
+        }
+
+        .rating-form button {
+            background-color: #3498db;
+            /* 하늘색 */
+            color: #ffffff;
+            /* 흰색 글자 */
+            cursor: pointer;
+        }
+
+        .rating-form button:hover {
+            background-color: #2980b9;
+            /* 어두운 하늘색 */
+        }
+
+        .rating-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rating-list li {
+            padding: 5px;
+            font-size: 1.1em;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Flash 메시지 스타일 */
+        .flash-message {
+            background-color: #3498db;
+            /* 하늘색 */
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .flash-message.error {
+            background-color: #e74c3c;
+            /* 빨간색 */
+        }
+
+        .flash-message.success {
+            background-color: #2ecc71;
+            /* 초록색 */
+        }
+
+        /* 푸터 스타일 */
+        footer {
+            background-color: #ffffff;
+            /* 흰색 배경 */
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            color: #3498db;
+            /* 하늘색 */
+        }
+
+        /* 별 모양 */
+        .star-rating {
+            color: #f39c12;
+            font-size: 1.5em;
+        }
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>기숙사 커뮤니티</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('home') }}">홈</a></li>
+                {% if session.get('username') %}
+                <li><a href="{{ url_for('dormitory_rating') }}">기숙사 평점</a></li>
+                <li><a href="{{ url_for('post') }}">게시글 작성</a></li>
+                <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+                <li class="logged-in">{{ session['username'] }}님</li>
+                {% else %}
+                <li><a href="{{ url_for('login') }}">로그인</a></li>
+                <li><a href="{{ url_for('signup') }}">회원가입</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Flash 메시지 표시 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if category in ['info', 'success', 'error'] %} <!-- 특정 카테고리만 -->
+        <div class="flash-message {{ category }}">
+            {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="page-title">기숙사 평점 남기기</div>
+
+        <form action="{{ url_for('dormitory_rating') }}" method="POST" class="rating-form">
+            <label for="dormitory_name">기숙사 이름:</label>
+            <select name="dormitory_name" id="dormitory_name" required>
+                <option value="금강">금강</option>
+                <option value="보현미륵">보현미륵</option>
+                <option value="문수관음">문수관음</option>
+                <option value="반야">반야</option>
+            </select><br><br>
+
+            <label for="rating">평점 (1-5):</label>
+            <input type="number" name="rating" id="rating" min="1" max="5" required><br><br>
+
+            <button type="submit">평점 남기기</button>
+        </form>
+
+        <h3>기숙사별 평균 평점</h3>
+        <ul class="rating-list">
+            {% for dormitory_name, average_rating in ratings %}
+            <li>
+                <span class="star-rating">
+                    {% for i in range(average_rating|round(0)|int) %}
+                    ★
+                    {% endfor %}
+                    {% for i in range(5 - (average_rating|round(0)|int)) %}
+                    ☆
+                    {% endfor %}
+                </span>
+                {{ dormitory_name }}: {{ average_rating | round(2) }} 점
+            </li>
+            {% endfor %}
+        </ul>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 기숙사 커뮤니티 | 모든 권리 보유</p>
+    </footer>
+</body>
+
+</html>

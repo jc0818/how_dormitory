@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<style>
+    a {
+        color: black;
+        text-decoration: none;
+    }
+
+    ul {
+        margin-left: auto;
+    }
+
+    li {
+        display: inline-block;
+        padding-left: 20px;
+    }
+
+    a:visited {
+        color: black;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}기숙사 커뮤니티{% endblock %}</title>
+</head>
+
+<body>
+    <header>
+        <nav style="display: none;">
+            <ul>
+                {% if session.get('username') %}
+                <li><a href="{{ url_for('dormitory_rating') }}">기숙사 평점</a></li>
+                <li><a href="{{ url_for('post') }}">게시판</a></li>
+                <li><a href="">안내사항</a></li>
+                <li><a href="{{ url_for('logout') }}">로그아웃</a> ({{ session['username'] }})</li>
+                {% else %}
+                <li><a href="{{ url_for('login') }}">로그인</a></li>
+                <li><a href="{{ url_for('signup') }}">회원가입</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

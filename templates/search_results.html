@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}홈{% endblock %}
+
+{% block content %}
+<style>
+.top-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    box-sizing: border-box;
+}
+.divider {
+    width: 100%;
+    height: 4px; /* 구분선 두께 */
+    background-color: #007bff; /* 진한 하늘색 */
+    margin: 0 auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 살짝의 그림자 효과 */
+}
+
+.top-bar .title {
+    font-size: 3.5vw;
+    flex-shrink: 1;
+}
+
+.top-bar .title a {
+    text-decoration: none;
+    color: black;
+}
+
+.top-bar .navigation {
+    margin-left: auto;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.top-bar .navigation a {
+    text-decoration: none;
+    font-size: 1.2vw;
+    color: #333;
+    padding: 5px 10px;
+    transition: color 0.3s;
+}
+
+.top-bar .navigation a:hover {
+    color: #000000;
+}
+
+/* Section */
+.section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5vw;
+    gap: 2vw;
+    width: 100%;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+h2 {
+    font-size: 2.5vw;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+h3 {
+    font-size: 1.8vw;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+/* 게시판 목록만 따로 스타일링 */
+.section .board {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto; /* 중앙 정렬 */
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    align-items: center; /* 항목 중앙 정렬 */
+    gap: 15px; /* 항목 간격 */
+}
+
+.section .board li {
+    width: 100%; /* 항목 너비 통일 */
+    max-width: 600px;
+    text-align: center; /* 텍스트 중앙 정렬 */
+    padding: 10px;
+    border: 1px solid #ddd; /* 구분을 위한 테두리 */
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+    transition: transform 0.3s;
+}
+
+.section .board li:hover {
+    transform: translateY(-3px); /* 마우스 오버 시 위로 이동 */
+}
+
+.section .board li a {
+    text-decoration: none;
+    color: #007bff;
+    transition: color 0.3s;
+}
+
+.section .board li a:hover {
+    color: #0056b3;
+}
+
+/* Footer */
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2vw 0;
+    background: rgba(0, 0, 0, 0.25);
+    width: 100%;
+    text-align: center;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.footer nav {
+    display: flex;
+    gap: 1.5vw;
+    flex-wrap: wrap;
+}
+
+.footer nav li {
+    list-style: none;
+    font-size: 1.2vw;
+}
+
+.footer nav li a {
+    text-decoration: none;
+    color: #fff;
+    transition: color 0.3s;
+}
+
+.footer nav li a:hover {
+    color: #ccc;
+}
+.navigation {
+    display: flex;
+    gap: 10px; /* 항목 간격 */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.navigation li {
+    display: flex;
+    align-items: center;
+}
+
+.navigation a {
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    padding: 10px 20px;
+    background-color: #97c6f7; /* 기본 배경색 */
+    border-radius: 25px; /* 둥근 버튼 모양 */
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* 효과 전환 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 버튼 입체감 */
+}
+
+.navigation a:hover {
+    background-color: #4fa1f8; 
+    transform: translateY(-3px); /* 살짝 위로 이동 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 강조 */
+}
+
+.navigation li:not(:last-child)::after {
+    content: "|";
+    color: #ddd;
+    margin: 0 30px; /* 구분선 좌우 여백 */
+    font-size: 1rem;
+}
+.navigation .user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;  /* '로그아웃'과 'username' 사이의 간격 추가 */
+    margin-left: auto; /* 오른쪽으로 밀기 */
+}
+.navigation li:last-child {
+    margin-left: auto; /* '로그아웃'과 'username'을 오른쪽으로 밀어줍니다 */
+    display: flex;
+    align-items: center;
+    gap: 15px;  /* '로그아웃'과 'username' 사이의 간격 */
+}
+
+.username {
+    font-weight: bold;  /* 이름 부분을 굵게 표시 */
+    color: #333;  /* 텍스트 색상 설정 */
+}
+/* 검색창 스타일 */
+.search-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 50px;
+    padding: 5px 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.search-container:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-container input[type="text"] {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 50px;
+    color: #333;
+    background-color: transparent;
+}
+
+.search-container input[type="text"]::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+.search-container button {
+    border: none;
+    background: #007bff;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.search-container button:hover {
+    background-color: #0056b3;
+}
+
+.search-container button .arrow-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.search-container button:hover .arrow-icon {
+    transform: translateX(5px); /* 화살표가 오른쪽으로 살짝 이동 */
+    color: #fff;
+}
+/* 기숙사 소개 스타일 */
+.dormitory-intro {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3개의 항목을 한 줄에 배치 */
+    gap: 2vw;
+    padding: 2vw;
+    box-sizing: border-box;
+}
+
+.dormitory-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 350px; /* 최소 높이를 설정하여 아이템 크기 균일화 */
+}
+
+.dormitory-item:hover {
+    transform: translateY(-5px);
+}
+
+.dormitory-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid #007bff;
+}
+
+.dormitory-description {
+    padding: 1vw;
+    flex-grow: 1;  /* 남는 공간을 모두 채우도록 설정 */
+}
+
+.dormitory-description h4 {
+    font-size: 1.5vw;
+    color: #007bff;
+    margin: 10px 0;
+}
+
+.dormitory-description p {
+    font-size: 1rem;
+    color: #555;
+}
+</style>
+
+<header>
+    <div class="top-bar">
+        <div class="logo"><a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/logo.jpg') }}"></a></div>
+        <div class="title"><a href="{{ url_for('home') }}">금장어때</a></div>
+        
+        <nav class="navigation">
+            <li><a href="{{ url_for('dormitory_rating') }}">기숙사 평점</a></li>
+            <li><a href="{{ url_for('post') }}">게시글 작성</a></li>
+            <li><a href="https://dorm.dongguk.ac.kr/HOME/dorm/sub.htm?nav_code=dor1586427378">안내사항</a></li>
+            <li><a href="{{ url_for('logout') }}">로그아웃</a> ({{ session['username'] }})</li>
+        </nav>        
+    </div>
+</header>
+
+<!-- 구분선 추가 -->
+<div class="divider"></div>
+
+<main>
+    <section class="section" id="section1">
+        <h2>검색 결과</h2>
+        <form action="{{ url_for('search') }}" method="get" class="search-form">
+            <div class="search-container">
+                <input type="text" id="search" name="query" value="{{ query }}" placeholder="원하는 내용을 검색해보세요">
+                <button type="submit">
+                    <span class="arrow-icon">→</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- 검색된 게시물 목록 -->
+        <h3>게시판</h3>
+        <ul class="board">
+            {% if posts %}
+                {% for post in posts %}
+                    <li><a href="{{ url_for('post_detail', post_id=post[0]) }}">{{ post[1] }}</a> - {{ post[3] }}</li>
+                {% endfor %}
+            {% else %}
+                <li>검색 결과가 없습니다.</li>
+            {% endif %}
+        </ul>
+    </section>
+
+    <section class="footer">
+        <nav>
+            <ul>
+                <li><a href="">금장어때에 대해</a></li>
+                <li><a href="">이용약관</a></li>
+                <li><a href="">개인정보 처리방침</a></li>
+            </ul>
+        </nav>
+    </section>
+</main>
+
+{% endblock %}
