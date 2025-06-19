@@ -4,7 +4,6 @@ import sqlite3
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.secret_key = 'IUHEWFOIefheiWOFIH332EWOIF'
 
 def init_db():
     conn = sqlite3.connect('database.db')
